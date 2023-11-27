@@ -25,7 +25,7 @@
     <form th:if="${book.isFree()}"
           th:action="@{/books/{id}(id=${book.getId()})}"
           th:object="${holder}"
-          th:method="PUT">
+          th:method="PATCH">
 
         <label for="peopleList">Книга свободна. Назначьте читателя:</label>
         <b th:if="${people.size() == 0}">Читателей нет!</b>
@@ -42,7 +42,7 @@
 
     <form th:if="${!book.isFree()}"
           th:action="@{/books/{id}(id=${book.getId()}, free=true)}"
-          th:method="PUT">
+          th:method="PATCH">
 
         <span>Держатель:
             <b th:text="${holder.getFullName()}">

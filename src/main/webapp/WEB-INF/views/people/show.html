@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${person.getFullName()}">TITLE</title>
+    <style>
+        li > a {
+            text-underline: none;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
 <div class="person-data">
@@ -16,13 +22,15 @@
         </b>
     </p>
 </div>
-<p th:if="${books.size() == 0}">Читатель пока не взял ни одной книги!</p>
-<div class="holdenBooks" th:if="${books.size() != 0}">
+<p th:if="${#lists.isEmpty(books)}">Читатель пока не взял ни одной книги!</p>
+<div class="holdenBooks"
+     th:if="${!#lists.isEmpty(books)}">
     <hr/>
     <h4>Книги читателя: </h4>
-    <ul>
-        <li th:each="book: ${books}">
+    <ul style="padding: 0">
+        <li th:each="book: ${books}" style="list-style: none">
             <a th:href="@{/books/{id} (id=${book.getId()})}"
+               th:style="${book.isOverdue() ? 'color: red;font-weight: bold;' : 'color: black;'}"
                th:text="${book.getName()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYearOfCreated()}">
                 BOOK LINK
             </a>

@@ -1,8 +1,8 @@
 package com.nikitapopov.library.utils;
 
-import com.nikitapopov.library.dao.BookDAO;
-import com.nikitapopov.library.dao.PersonDAO;
 import com.nikitapopov.library.models.Book;
+import com.nikitapopov.library.services.BooksService;
+import com.nikitapopov.library.services.PeopleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -10,13 +10,13 @@ import org.springframework.validation.Validator;
 
 @Component
 public class BooksValidator implements Validator {
-    private final BookDAO bookDAO;
-    private final PersonDAO personDAO;
+    private final BooksService booksService;
+    private final PeopleService peopleService;
 
     @Autowired
-    public BooksValidator(BookDAO bookDAO, PersonDAO personDAO) {
-        this.bookDAO = bookDAO;
-        this.personDAO = personDAO;
+    public BooksValidator(BooksService booksService, PeopleService peopleService) {
+        this.booksService = booksService;
+        this.peopleService = peopleService;
     }
 
     @Override
@@ -27,11 +27,11 @@ public class BooksValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Book book = (Book) target;
-        Book existingBook = bookDAO.show(book.getId());
+        Book existingBook = booksService.find(book.getId());
 
-        if (book.getHolderId() != null
-                && personDAO.show(book.getHolderId()) == null) {
-            errors.rejectValue("holderId", "", "Пользователя с таким ID не существует!");
+        if (book.getHolder().getId() != 0
+                && peopleService.find(book.getHolder().getId()) == null) {
+            errors.rejectValue("holder.id", "", "Пользователя с таким ID не существует!");
         }
 
         if (existingBook != null

@@ -1,30 +1,51 @@
 package com.nikitapopov.library.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Calendar;
 import java.util.Date;
 
+@Entity
+@Table(name = "book")
 public class Book {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "name")
     @NotBlank(message = "Название книги не может быть пустым!")
     private String name;
+
+    @Column(name = "author")
     @NotBlank(message = "У книги не может не быть автора!")
     private String author;
+
+    @Column(name = "year_of_created")
     @Max(value = 2023, message = "Книга не может быть написана позже 2023 года! (на момент разработки приложения)")
     private int yearOfCreated;
-    private Integer holderId;
+
+    @Column(name = "receipt_date")
+    private Date receiptDate;
+
+    @ManyToOne
+    @JoinColumn(name = "holder_id", referencedColumnName = "id")
+    private Person holder;
+
+    @Transient
+    private boolean isOverdue;
 
     public Book() {}
 
-    public Book(int id, String name, String author, int yearOfCreated, Integer holderId) {
-        this.id = id;
+    public Book(String name, String author, int yearOfCreated, Person holder, Date receiptDate) {
         this.name = name;
         this.author = author;
         this.yearOfCreated = yearOfCreated;
-        this.holderId = holderId;
+        this.holder = holder;
+        this.receiptDate = receiptDate;
     }
 
     public int getId() {
@@ -59,16 +80,15 @@ public class Book {
         this.yearOfCreated = yearOfCreated;
     }
 
-    public Integer getHolderId() {
-        return holderId;
+    public Person getHolder() {
+        return holder;
     }
 
-    public void setHolderId(Integer holderId) {
-        this.holderId = holderId;
+    public void setHolder(Person holder) {
+        this.holder = holder;
     }
-
     public boolean isFree() {
-        return holderId == null;
+        return holder == null;
     }
 
     @Override
@@ -77,5 +97,29 @@ public class Book {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public boolean isOverdue() {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
+        long overdueTime = 1000 * 60 * 60 * 24 * 10; // ten days
+
+        calendar.setTime(receiptDate);
+
+        Date receiptDateTime = calendar.getTime();
+
+        return currentDate.getTime() - receiptDateTime.getTime() > overdueTime;
+    }
+
+    public void setOverdue(boolean overdue) {
+        isOverdue = overdue;
+    }
+
+    public Date getReceiptDate() {
+        return receiptDate;
+    }
+
+    public void setReceiptDate(Date receiptDate) {
+        this.receiptDate = receiptDate;
     }
 }

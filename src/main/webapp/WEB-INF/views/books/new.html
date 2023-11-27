@@ -38,11 +38,11 @@
     </div>
     <div>
         <label for="holderId">ID держателя книги: </label>
-        <input type="number" max="2140000000" id="holderId" th:field="*{holderId}">
+        <input type="number" max="2140000000" id="holderId" th:field="*{holder.id}">
         <p style="color: red"
            class="errors"
-           th:if="${#fields.hasErrors('holderId')}"
-           th:errors="*{holderId}">
+           th:if="${#fields.hasErrors('holder.id')}"
+           th:errors="*{holder.id}">
             ERROR
         </p>
     </div>

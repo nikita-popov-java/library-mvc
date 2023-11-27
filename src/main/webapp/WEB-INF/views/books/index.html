@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Книги</title>
+    <title th:if="${param.size() == 0}">Книги</title>
+    <title th:if="${param.size() != 0}" th:text="${'Книги. Страница ' + param.get('page')}">Книги. Страница 1</title>
 </head>
 <body>
 <h3>Книги, доступные в Library-MVC:</h3>
@@ -12,7 +13,7 @@
         <a th:href="@{books/{id}(id=${book.getId()})}"
            th:text="${book.getName() + ', '
                     + book.getAuthor() + ' - '
-                    + (book.getHolderId() != null ? 'на руках' : 'в библиотеке')}">
+                    + (book.getHolder() != null ? 'на руках' : 'в библиотеке')}">
             BOOK INFO
         </a>
     </li>

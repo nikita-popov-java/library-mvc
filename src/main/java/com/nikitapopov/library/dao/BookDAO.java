@@ -20,73 +20,41 @@ public class BookDAO extends AbstractLibraryDAO<Book> {
 
     @Override
     public List<Book> index() {
-        return template.query("SELECT * FROM book", new BeanPropertyRowMapper<>(Book.class));
+        throw new IllegalArgumentException();
     }
 
     @Override
     public Optional<Book> show(String name) {
-        return template.query(
-                        "SELECT * FROM book WHERE name=?",
-                        new BeanPropertyRowMapper<>(Book.class),
-                        name
-                ).stream()
-                .findAny();
+        throw new IllegalArgumentException();
     }
 
     @Override
     public Book show(int id) {
-        return template.query(
-                        "SELECT * FROM book WHERE id=?",
-                        new BeanPropertyRowMapper<>(Book.class),
-                        id
-                ).stream()
-                .findAny()
-                .orElse(null);
+        throw new IllegalArgumentException();
     }
 
     @Override
     public void save(Book record) {
-        template.update(
-                "INSERT INTO book(name, author, year_of_created, holder_id) VALUES(?, ?, ?, ?)",
-                record.getName(),
-                record.getAuthor(),
-                record.getYearOfCreated(),
-                record.getHolderId()
-        );
+
     }
 
     @Override
     public void update(int id, Book record) {
-        template.update(
-                "UPDATE book SET name=?, author=?, year_of_created=?, holder_id=? WHERE id=?",
-                record.getName(),
-                record.getAuthor(),
-                record.getYearOfCreated(),
-                record.getHolderId(),
-                id
-        );
+
     }
 
     @Override
     public void delete(int id) {
-        template.update("DELETE FROM book WHERE id=?", id);
     }
 
     public List<Book> getUserBooks(int id) {
-        return template.query("SELECT * FROM book WHERE holder_id=?", new BeanPropertyRowMapper<>(Book.class), id)
-                .stream().toList();
+        throw new IllegalArgumentException();
     }
 
     public Person getBookHolder(int bookId) {
-        return template.query("SELECT person.* " +
-                                "FROM book INNER JOIN person ON book.holder_id=person.id " +
-                                "WHERE book.id=?", new BeanPropertyRowMapper<>(Person.class), bookId)
-                .stream()
-                .findAny()
-                .orElse(null);
+        throw new IllegalArgumentException();
     }
 
     public void setBookToUser(int bookId, Integer userId) {
-        template.update("UPDATE book SET holder_id=? WHERE id=?", userId, bookId);
     }
 }

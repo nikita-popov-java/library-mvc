@@ -2,18 +2,21 @@ package com.nikitapopov.library.utils;
 
 import com.nikitapopov.library.dao.PersonDAO;
 import com.nikitapopov.library.models.Person;
+import com.nikitapopov.library.services.PeopleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.Optional;
+
 @Component
 public class PeopleValidator implements Validator {
-    private final PersonDAO personDAO;
+    private final PeopleService peopleService;
 
     @Autowired
-    public PeopleValidator(PersonDAO personDAO) {
-        this.personDAO = personDAO;
+    public PeopleValidator(PeopleService peopleService) {
+        this.peopleService = peopleService;
     }
 
     @Override
@@ -24,8 +27,11 @@ public class PeopleValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Person person = (Person) target;
+        Optional<Person> existingPerson = peopleService.findByFullName(person.getFullName());
 
-        if (personDAO.show(person.getFullName()).isPresent()) {
+
+        if (existingPerson.isPresent()
+                && existingPerson.get().getId() != person.getId()) {
             errors.rejectValue("fullName", "", "Такой пользователь уже существует!");
         }
     }
