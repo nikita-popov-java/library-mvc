@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -63,6 +64,8 @@ public class Person {
     }
 
     public List<Book> getBooks() {
+        if (books == null)
+            books = new ArrayList<>();
         return books;
     }
 

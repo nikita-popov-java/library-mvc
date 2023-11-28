@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.Calendar;
 import java.util.Date;
 
 @Entity
@@ -29,6 +28,7 @@ public class Book {
     private int yearOfCreated;
 
     @Column(name = "receipt_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date receiptDate;
 
     @ManyToOne
@@ -87,6 +87,7 @@ public class Book {
     public void setHolder(Person holder) {
         this.holder = holder;
     }
+
     public boolean isFree() {
         return holder == null;
     }
@@ -99,16 +100,8 @@ public class Book {
                 '}';
     }
 
-    public boolean isOverdue() {
-        Calendar calendar = Calendar.getInstance();
-        Date currentDate = calendar.getTime();
-        long overdueTime = 1000 * 60 * 60 * 24 * 10; // ten days
-
-        calendar.setTime(receiptDate);
-
-        Date receiptDateTime = calendar.getTime();
-
-        return currentDate.getTime() - receiptDateTime.getTime() > overdueTime;
+    public boolean getOverdue() {
+        return isOverdue;
     }
 
     public void setOverdue(boolean overdue) {

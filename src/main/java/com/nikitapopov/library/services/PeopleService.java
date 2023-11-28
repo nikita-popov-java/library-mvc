@@ -1,5 +1,6 @@
 package com.nikitapopov.library.services;
 
+import com.nikitapopov.library.models.Book;
 import com.nikitapopov.library.models.Person;
 import com.nikitapopov.library.repositories.PeopleRepository;
 import org.hibernate.Hibernate;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +32,19 @@ public class PeopleService {
 
     public Person find(int id, boolean isNeedInitBooks) {
         Person person = find(id);
-        if (isNeedInitBooks)
-            Hibernate.initialize(person.getBooks());
+        if (isNeedInitBooks) {
+            List<Book> books = person.getBooks();
+
+            Hibernate.initialize(books);
+
+            books.forEach(book -> {
+                long currentTime = Calendar.getInstance().getTime().getTime();
+                long overdueTime = 1000 * 60 * 60 * 24 * 10;
+                long usedTime = book.getReceiptDate().getTime();
+
+                book.setOverdue(Math.abs(usedTime - currentTime) > overdueTime);
+            });
+        }
         return person;
     }
 

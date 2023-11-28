@@ -3,11 +3,16 @@ package com.nikitapopov.library.services;
 import com.nikitapopov.library.models.Book;
 import com.nikitapopov.library.models.Person;
 import com.nikitapopov.library.repositories.BooksRepository;
+import com.sun.net.httpserver.Request;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,8 +30,18 @@ public class BooksService {
         return booksRepository.findAll();
     }
 
-    public List<Book> findAllPageable(Pageable pageable) {
-        return booksRepository.findAll(pageable).stream().toList();
+    public List<Book> findAllPageable(Integer page, Integer booksPerPage, boolean sort) {
+        if (page != null && booksPerPage != null && page > 0 && booksPerPage > 1) {
+            PageRequest request = PageRequest.of(page - 1, booksPerPage);
+            if (sort) {
+                request = request.withSort(Sort.by("yearOfCreated"));
+            }
+            return booksRepository.findAll(request).stream().toList();
+        } else if (sort) {
+            return booksRepository.findAll(Sort.by("yearOfCreated")).stream().toList();
+        } else {
+            return booksRepository.findAll().stream().toList();
+        }
     }
 
     public Book find(int id) {
@@ -59,6 +74,9 @@ public class BooksService {
 
     @Transactional
     public void setBookToUser(int bookId, Person holder) {
-        find(bookId).setHolder(holder);
+        Book book = find(bookId);
+        book.setReceiptDate(new Date());
+        book.setHolder(holder);
+        holder.getBooks().add(book);
     }
 }

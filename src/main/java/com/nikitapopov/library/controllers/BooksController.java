@@ -35,19 +35,10 @@ public class BooksController {
                         @RequestParam(value = "books_per_page", required = false) Integer booksPerPage,
                         @RequestParam(value = "sort_by_year", required = false) Boolean sortByYear,
                         Model model) {
-        List<Book> resultBooksList;
 
-        if (page != null && booksPerPage != null) {
-            PageRequest pageRequest = PageRequest.of(page - 1, booksPerPage);
-
-            if (sortByYear != null && sortByYear) {
-                resultBooksList = booksService.findAllPageable(pageRequest.withSort(Sort.by("yearOfCreated")));
-            } else {
-                resultBooksList = booksService.findAllPageable(pageRequest);
-            }
-        } else {
-            resultBooksList = booksService.findAll();
-        }
+        List<Book> resultBooksList = (page == null && booksPerPage == null && sortByYear == null)
+                ? booksService.findAll()
+                : booksService.findAllPageable(page, booksPerPage, sortByYear);
 
         model.addAttribute("books", resultBooksList);
 
